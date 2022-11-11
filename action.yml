@@ -80,7 +80,7 @@ runs:
       shell: bash
       run: |
         mkdir -p ${{env.TAFFI_CONFIGS}}
-        cp configs/* ${{env.TAFFI_CONFIGS}}
+        cp ${{ github.action_path }}/configs/* ${{env.TAFFI_CONFIGS}}
 
     # - name: Prepare TAFFi config files
     #   run: |
@@ -128,7 +128,7 @@ runs:
       if: inputs.jiraProject != '' && inputs.jiraTestPlan != ''
       shell: bash
       run: >
-        bin/set_json_values.sh
+        ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/tafConfig.json
         "jira.credentials.username:${{ inputs.jiraUsername }}"
         "jira.credentials.password:${{ inputs.jiraPassword }}"
@@ -137,7 +137,7 @@ runs:
       if: inputs.jiraProject != '' && inputs.jiraTestPlan != ''
       shell: bash
       run: >
-        bin/set_json_values.sh
+        ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/runConfig.json
         "runConfig.jiraProject:${{ inputs.jiraProject }}"
         "runConfig.testPlan:${{ inputs.jiraTestPlan }}"
@@ -145,7 +145,7 @@ runs:
     - name: Setup TAFFi server, client and run config in TAFFi run configs
       shell: bash
       run: >
-        bin/set_json_values.sh
+        ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/runConfig.json
         "serverConfig.testDir:${GITHUB_WORKSPACE}/${{ inputs.testDir }}"
         "serverConfig.configDir:${{env.TAFFI_CONFIGS}}"
@@ -160,7 +160,7 @@ runs:
     - name: Setup Docker client config
       shell: bash
       run: >
-        bin/set_json_values.sh
+        ${{ github.action_path }}/bin/set_json_values.sh
         ~/.docker/config.json
         "proxies.default.noProxy:${NO_PROXY}"
 
@@ -175,11 +175,13 @@ runs:
         cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
     # - name: Run Robot tests with TAFFi
+    #   shell: bash
     #   run: |
-    #     bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
+    #     ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
     # - name: Check the Robot output dir contents
     #   if: always()
+    #   shell: bash
     #   run: ls -la ${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}
 
     # - name: Archive Robot output
