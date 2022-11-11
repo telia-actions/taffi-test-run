@@ -59,7 +59,10 @@ inputs:
     description: Password to be used to access Jira (https://devopsjira.verso.sonera.fi) for reporting test results. Required only if also both jiraProject and jiraTestPlan are provided, and thus test reporting is tried to be done.
     required: false
     type: string
-
+  realRun:
+    description: Really run tests?
+    default: false
+    type: boolean
 
 # outputs:
 #   report-url:
@@ -81,40 +84,6 @@ runs:
       run: |
         mkdir -p ${{env.TAFFI_CONFIGS}}
         cp ${{ github.action_path }}/configs/* ${{env.TAFFI_CONFIGS}}
-
-    # - name: Prepare TAFFi config files
-    #   run: |
-    #     mkdir -p ${{env.TAFFI_CONFIGS}}
-    #     cat << EOF > ${{env.TAFFI_CONFIGS}}/tafConfig.json
-    #     {
-    #         "reportDir": "/taffi/results",
-    #         "jUnitReportFile": "junit/junit.xml",
-    #         "jira": {
-    #             "baseUrl": "https://devopsjira.verso.sonera.fi"
-    #         },
-    #         "testReporter": "xray",
-    #         "testReporterComment": "Supported values are testflo, xray",
-    #         "logging": {
-    #             "logger": "debug",
-    #             "loggerComment": "Supported values are pino, debug and console",
-    #             "level": "trace",
-    #             "levelComment": "Supported values are trace, debug, info, warn, error, fatal and silent"
-    #         }
-    #     }
-    #     EOF
-    #     cat << EOF > ${{env.TAFFI_CONFIGS}}/runConfig.json
-    #     {
-    #         "serverConfig": {
-    #             "dockerImage": "verso-docker-dev-local.jfrog.teliacompany.io/taffi/taffiserver:latest",
-    #             "cmd": ["bash", "-c", "pip install -r /taffi/tests/cicd/requirements.txt && npm start --prefix server"]
-    #         },
-    #         "cliConfig": {
-    #             "dockerImage": "verso-docker-dev-local.jfrog.teliacompany.io/taffi/tafficli:latest",
-    #             "serverUrl": "http://taffiserver.taffinet:4000",
-    #             "serverTimeout": 180
-    #         }
-    #     }
-    #     EOF
 
     - name: Login to verso-docker-dev-local Docker registry in Common Artifactory
       uses: docker/login-action@v2
@@ -174,22 +143,23 @@ runs:
       run: |
         cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
-    # - name: Run Robot tests with TAFFi
-    #   shell: bash
-    #   run: |
-    #     ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
+    - name: Run Robot tests with TAFFi
+      if: inputs.realRun
+      shell: bash
+      run: |
+        ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
-    # - name: Check the Robot output dir contents
-    #   if: always()
-    #   shell: bash
-    #   run: ls -la ${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}
+    - name: Check the Robot output dir contents
+      if: always() && inputs.realRun
+      shell: bash
+      run: ls -la ${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}
 
-    # - name: Archive Robot output
-    #   if: always()
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: robot-output
-    #     path: '${{ github.workspace }}/${{ inputs.resultsDir }}/**'
+    - name: Archive Robot output
+      if: always() && inputs.realRun
+      uses: actions/upload-artifact@v3
+      with:
+        name: robot-output
+        path: '${{ github.workspace }}/${{ inputs.resultsDir }}/**'
 
 
   # using: composite
