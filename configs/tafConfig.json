@@ -1,0 +1,15 @@
+{
+  "reportDir": "/taffi/results",
+  "jUnitReportFile": "junit/junit.xml",
+  "jira": {
+      "baseUrl": "https://devopsjira.verso.sonera.fi"
+  },
+  "testReporter": "xray",
+  "testReporterComment": "Supported values are testflo, xray",
+  "logging": {
+      "logger": "debug",
+      "loggerComment": "Supported values are pino, debug and console",
+      "level": "trace",
+      "levelComment": "Supported values are trace, debug, info, warn, error, fatal and silent"
+  }
+}

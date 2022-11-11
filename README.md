@@ -1,2 +1,2 @@
-# taffi-test-run
-Action to run tests using TAFFi test automation runner
+# TAFFi Test Run GitHub Action
+GitHub Action to run tests using TAFFi test automation runner

@@ -1,0 +1,11 @@
+{
+  "serverConfig": {
+      "dockerImage": "verso-docker-dev-local.jfrog.teliacompany.io/taffi/taffiserver:latest",
+      "cmd": ["bash", "-c", "pip install -r /taffi/tests/cicd/requirements.txt && npm start --prefix server"]
+  },
+  "cliConfig": {
+      "dockerImage": "verso-docker-dev-local.jfrog.teliacompany.io/taffi/tafficli:latest",
+      "serverUrl": "http://taffiserver.taffinet:4000",
+      "serverTimeout": 180
+  }
+}
