@@ -1,65 +1,64 @@
 name: 'Run tests using TAFFi'
 description: 'Sets up needed TAFFi configs and runs the tests using TAFFi'
 inputs:
-    inputs:
-      testDir:
-        description: Path to a directory below which all the files needed for test run are found from. Path is relative to workspace directory
-        default: ''
-        required: false
-        type: string
-      resultsDir:
-        description: Path to a directory where all the test results will be stored. Path is relative to workspace directory
-        default: 'output'
-        required: false
-        type: string
-      testRunTool:
-        description: Test tool to run
-        default: robot
-        required: false
-        type: string
-      testRunBaseDir:
-        description: Path to the base directory where all tests to run are found. Must be relative to testDir input.
-        default: robot/tests
-        required: false
-        type: string
-      testRunConfigPath:
-        description: Path to the test configuration file (tool specific file, for Robot it is an argument file in JSON format). Must be relative to testDir input.
-        default: robot/tests/robot.arguments.json
-        required: false
-        type: string
-      testRunTests:
-        description: Tests to run. Quotes (") need to be escaped with a backslash (\).
-        default: .
-        required: false
-        type: string
-      testRunOptions:
-        description: Commandline options to be given for test tool. Quotes (") need to be escaped with a backslash (\).
-        required: false
-        type: string
-      dockerRegistryUsername:
-        description: Username to be used to access the Docker registry in Telia Company JFrog Artifactory (verso-docker-dev-local.jfrog.teliacompany.io) for downloading the TAFFi Docker images
-        required: true
-        type: string
-      dockerRegistryPassword:
-        description: Password to be used to access the Docker registry in Telia Company JFrog Artifactory (verso-docker-dev-local.jfrog.teliacompany.io) for downloading the TAFFi Docker images
-        required: true
-        type: string
-      jiraProject:
-        description: Jira project to which report the results
-        required: false
-        type: string
-      jiraTestPlan:
-        description: Jira test plan to which report the results
-        required: false
-        type: string
-      jiraUsername:
-        description: Username to be used to access Jira (https://devopsjira.verso.sonera.fi) for reporting test results. Required only if also both jiraProject and jiraTestPlan are provided, and thus test reporting is tried to be done.
-        required: false
-        type: string
-      jiraPassword:
-        description: Password to be used to access Jira (https://devopsjira.verso.sonera.fi) for reporting test results. Required only if also both jiraProject and jiraTestPlan are provided, and thus test reporting is tried to be done.
-        required: false
-        type: string
+  testDir:
+    description: Path to a directory below which all the files needed for test run are found from. Path is relative to workspace directory
+    default: ''
+    required: false
+    type: string
+  resultsDir:
+    description: Path to a directory where all the test results will be stored. Path is relative to workspace directory
+    default: 'output'
+    required: false
+    type: string
+  testRunTool:
+    description: Test tool to run
+    default: robot
+    required: false
+    type: string
+  testRunBaseDir:
+    description: Path to the base directory where all tests to run are found. Must be relative to testDir input.
+    default: robot/tests
+    required: false
+    type: string
+  testRunConfigPath:
+    description: Path to the test configuration file (tool specific file, for Robot it is an argument file in JSON format). Must be relative to testDir input.
+    default: robot/tests/robot.arguments.json
+    required: false
+    type: string
+  testRunTests:
+    description: Tests to run. Quotes (") need to be escaped with a backslash (\).
+    default: .
+    required: false
+    type: string
+  testRunOptions:
+    description: Commandline options to be given for test tool. Quotes (") need to be escaped with a backslash (\).
+    required: false
+    type: string
+  dockerRegistryUsername:
+    description: Username to be used to access the Docker registry in Telia Company JFrog Artifactory (verso-docker-dev-local.jfrog.teliacompany.io) for downloading the TAFFi Docker images
+    required: true
+    type: string
+  dockerRegistryPassword:
+    description: Password to be used to access the Docker registry in Telia Company JFrog Artifactory (verso-docker-dev-local.jfrog.teliacompany.io) for downloading the TAFFi Docker images
+    required: true
+    type: string
+  jiraProject:
+    description: Jira project to which report the results
+    required: false
+    type: string
+  jiraTestPlan:
+    description: Jira test plan to which report the results
+    required: false
+    type: string
+  jiraUsername:
+    description: Username to be used to access Jira (https://devopsjira.verso.sonera.fi) for reporting test results. Required only if also both jiraProject and jiraTestPlan are provided, and thus test reporting is tried to be done.
+    required: false
+    type: string
+  jiraPassword:
+    description: Password to be used to access Jira (https://devopsjira.verso.sonera.fi) for reporting test results. Required only if also both jiraProject and jiraTestPlan are provided, and thus test reporting is tried to be done.
+    required: false
+    type: string
 
 
 # outputs:
