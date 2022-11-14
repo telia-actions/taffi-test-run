@@ -143,6 +143,10 @@ runs:
       run: |
         cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
+    - name: Check realRun input value
+      shell: bash
+      run: echo "realRun==${{ inputs.realRun }}"
+
     - name: Run Robot tests with TAFFi
       if: ${{ inputs.realRun }}
       shell: bash
