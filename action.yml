@@ -69,12 +69,11 @@ inputs:
 #     description: "URL for Allure report"
 #     value: ${{ steps.report-link.outputs.report-url }}
 
-defaults:
-  run:
-    shell: bash
-
 runs:
   using: composite
+  defaults:
+    run:
+      shell: bash
   steps:
     - name: Set environment variables
       # shell: bash
