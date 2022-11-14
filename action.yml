@@ -71,19 +71,16 @@ inputs:
 
 runs:
   using: composite
-  defaults:
-    run:
-      shell: bash
   steps:
     - name: Set environment variables
-      # shell: bash
+      shell: bash
       run: |
         echo "TAFFI_CONFIGS=${GITHUB_WORKSPACE}/taffi_config" >> $GITHUB_ENV
         echo "no_proxy=${no_proxy},.telia.net,.taffinet" >> $GITHUB_ENV
         echo "NO_PROXY=${NO_PROXY},.telia.net,.taffinet" >> $GITHUB_ENV
 
     - name: Prepare TAFFi config files
-      # shell: bash
+      shell: bash
       run: |
         mkdir -p ${{env.TAFFI_CONFIGS}}
         cp ${{ github.action_path }}/configs/* ${{env.TAFFI_CONFIGS}}
@@ -98,7 +95,7 @@ runs:
 
     - name: Setup Jira credentials in tafConfig.json
       if: inputs.jiraProject != '' && inputs.jiraTestPlan != ''
-      # shell: bash
+      shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/tafConfig.json
@@ -107,7 +104,7 @@ runs:
 
     - name: Setup Jira reporting config in TAFFi run config
       if: inputs.jiraProject != '' && inputs.jiraTestPlan != ''
-      # shell: bash
+      shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/runConfig.json
@@ -115,7 +112,7 @@ runs:
         "runConfig.testPlan:${{ inputs.jiraTestPlan }}"
 
     - name: Setup TAFFi server, client and run config in TAFFi run configs
-      # shell: bash
+      shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/runConfig.json
@@ -130,7 +127,7 @@ runs:
         "runConfig.runs.0.baseDir:/taffi/tests/${{ inputs.testRunBaseDir }}"
 
     - name: Setup Docker client config
-      # shell: bash
+      shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
         ~/.docker/config.json
@@ -152,7 +149,7 @@ runs:
 
     - name: Run Robot tests with TAFFi
       if: ${{ inputs.realRun == 'true' }}
-      # shell: bash
+      shell: bash
       run: |
         ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
