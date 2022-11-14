@@ -144,18 +144,18 @@ runs:
         cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
     - name: Run Robot tests with TAFFi
-      if: inputs.realRun
+      if: ${{ inputs.realRun }}
       shell: bash
       run: |
         ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
     - name: Check the Robot output dir contents
-      if: always() && inputs.realRun
+      if: ${{ inputs.realRun && always() }}
       shell: bash
       run: ls -la ${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}
 
     - name: Archive Robot output
-      if: always() && inputs.realRun
+      if: ${{ inputs.realRun && always() }}
       uses: actions/upload-artifact@v3
       with:
         name: robot-output
