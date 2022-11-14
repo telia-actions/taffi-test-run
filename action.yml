@@ -64,11 +64,6 @@ inputs:
     default: true
     type: boolean
 
-# outputs:
-#   report-url:
-#     description: "URL for Allure report"
-#     value: ${{ steps.report-link.outputs.report-url }}
-
 runs:
   using: composite
   steps:
@@ -133,30 +128,11 @@ runs:
         ~/.docker/config.json
         "proxies.default.noProxy:${NO_PROXY}"
 
-    # - name: Check contents of tafConfig.json
-    #   shell: bash
-    #   run: |
-    #     cat "${{env.TAFFI_CONFIGS}}/tafConfig.json"
-
-    # - name: Check contents of TAFFi run config
-    #   shell: bash
-    #   run: |
-    #     cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
-
-    # - name: Check realRun input value
-    #   shell: bash
-    #   run: echo "realRun==${{ inputs.realRun == 'true' }}"
-
     - name: Run Robot tests with TAFFi
       if: ${{ inputs.realRun == 'true' }}
       shell: bash
       run: |
         ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
-
-    # - name: Check the Robot output dir contents
-    #   if: ${{ inputs.realRun == 'true' && always() }}
-    #   shell: bash
-    #   run: ls -la ${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}
 
     - name: Archive Robot output
       if: ${{ inputs.realRun == 'true' && always() }}
