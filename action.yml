@@ -144,7 +144,7 @@ runs:
         cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
     - name: Run Robot tests with TAFFi
-      if: ${{ false }}
+      if: ${{ inputs.realRun }}
       shell: bash
       run: |
         ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
