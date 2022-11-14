@@ -61,7 +61,7 @@ inputs:
     type: string
   realRun:
     description: Really run tests?
-    default: false
+    default: true
     type: boolean
 
 # outputs:
@@ -69,18 +69,22 @@ inputs:
 #     description: "URL for Allure report"
 #     value: ${{ steps.report-link.outputs.report-url }}
 
+defaults:
+  run:
+    shell: bash
+
 runs:
   using: composite
   steps:
     - name: Set environment variables
-      shell: bash
+      # shell: bash
       run: |
         echo "TAFFI_CONFIGS=${GITHUB_WORKSPACE}/taffi_config" >> $GITHUB_ENV
         echo "no_proxy=${no_proxy},.telia.net,.taffinet" >> $GITHUB_ENV
         echo "NO_PROXY=${NO_PROXY},.telia.net,.taffinet" >> $GITHUB_ENV
 
     - name: Prepare TAFFi config files
-      shell: bash
+      # shell: bash
       run: |
         mkdir -p ${{env.TAFFI_CONFIGS}}
         cp ${{ github.action_path }}/configs/* ${{env.TAFFI_CONFIGS}}
@@ -95,7 +99,7 @@ runs:
 
     - name: Setup Jira credentials in tafConfig.json
       if: inputs.jiraProject != '' && inputs.jiraTestPlan != ''
-      shell: bash
+      # shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/tafConfig.json
@@ -104,7 +108,7 @@ runs:
 
     - name: Setup Jira reporting config in TAFFi run config
       if: inputs.jiraProject != '' && inputs.jiraTestPlan != ''
-      shell: bash
+      # shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/runConfig.json
@@ -112,7 +116,7 @@ runs:
         "runConfig.testPlan:${{ inputs.jiraTestPlan }}"
 
     - name: Setup TAFFi server, client and run config in TAFFi run configs
-      shell: bash
+      # shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/runConfig.json
@@ -127,36 +131,36 @@ runs:
         "runConfig.runs.0.baseDir:/taffi/tests/${{ inputs.testRunBaseDir }}"
 
     - name: Setup Docker client config
-      shell: bash
+      # shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
         ~/.docker/config.json
         "proxies.default.noProxy:${NO_PROXY}"
 
-    - name: Check contents of tafConfig.json
-      shell: bash
-      run: |
-        cat "${{env.TAFFI_CONFIGS}}/tafConfig.json"
+    # - name: Check contents of tafConfig.json
+    #   shell: bash
+    #   run: |
+    #     cat "${{env.TAFFI_CONFIGS}}/tafConfig.json"
 
-    - name: Check contents of TAFFi run config
-      shell: bash
-      run: |
-        cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
+    # - name: Check contents of TAFFi run config
+    #   shell: bash
+    #   run: |
+    #     cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
-    - name: Check realRun input value
-      shell: bash
-      run: echo "realRun==${{ inputs.realRun == 'true' }}"
+    # - name: Check realRun input value
+    #   shell: bash
+    #   run: echo "realRun==${{ inputs.realRun == 'true' }}"
 
     - name: Run Robot tests with TAFFi
       if: ${{ inputs.realRun == 'true' }}
-      shell: bash
+      # shell: bash
       run: |
         ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
-    - name: Check the Robot output dir contents
-      if: ${{ inputs.realRun == 'true' && always() }}
-      shell: bash
-      run: ls -la ${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}
+    # - name: Check the Robot output dir contents
+    #   if: ${{ inputs.realRun == 'true' && always() }}
+    #   shell: bash
+    #   run: ls -la ${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}
 
     - name: Archive Robot output
       if: ${{ inputs.realRun == 'true' && always() }}
@@ -164,39 +168,3 @@ runs:
       with:
         name: robot-output
         path: '${{ github.workspace }}/${{ inputs.resultsDir }}/**'
-
-
-  # using: composite
-  # steps:
-  #   - name: Get Allure history
-  #     uses: actions/checkout@v3
-  #     continue-on-error: true
-  #     with:
-  #       ref: ${{ inputs.gh-pages-branch }}
-  #       path: gh-pages
-
-  #   - name: Allure Report Generation
-  #     uses: telia-actions/simple-elf-allure-report@v1
-  #     with:
-  #       allure_results: ${{ inputs.allure-results }}
-  #       #gh_pages: gh-pages
-  #       #allure_report: allure-report
-  #       allure_history: allure-history
-  #       keep_reports: ${{ inputs.keep-reports }}
-  #       subfolder: ${{ inputs.subfolder }}
-  #       test_env_name: ${{ inputs.test-env-name }}
-
-  #   - name: Deploy report to Github Pages
-  #     uses: telia-actions/peaceiris-gh-pages@v4
-  #     with:
-  #       github_token: ${{ inputs.gh-token }}
-  #       publish_branch: ${{ inputs.gh-pages-branch }}
-  #       publish_dir: ./allure-history
-
-  #   - id: report-link
-  #     run: |
-  #       if [[ '${{ inputs.subfolder }}' != '' ]]; then export URL_SUBFOLDER=${{ inputs.subfolder }}/; fi
-  #       echo "report-url=$(gh api repos/$GITHUB_REPOSITORY/pages | jq .html_url | sed -e 's/^"//' -e 's/"$//')${URL_SUBFOLDER}${{ github.run_number }}/" >> $GITHUB_OUTPUT
-  #     env:
-  #       GH_TOKEN: ${{ inputs.gh-token }}
-  #     shell: bash
