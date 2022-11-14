@@ -145,21 +145,21 @@ runs:
 
     - name: Check realRun input value
       shell: bash
-      run: echo "realRun==${{ inputs.realRun == true }}"
+      run: echo "realRun==${{ inputs.realRun == 'true' }}"
 
     - name: Run Robot tests with TAFFi
-      if: ${{ inputs.realRun == true }}
+      if: ${{ inputs.realRun == 'true' }}
       shell: bash
       run: |
         ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
     - name: Check the Robot output dir contents
-      if: ${{ inputs.realRun == true && always() }}
+      if: ${{ inputs.realRun == 'true' && always() }}
       shell: bash
       run: ls -la ${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}
 
     - name: Archive Robot output
-      if: ${{ inputs.realRun == true && always() }}
+      if: ${{ inputs.realRun == 'true' && always() }}
       uses: actions/upload-artifact@v3
       with:
         name: robot-output
