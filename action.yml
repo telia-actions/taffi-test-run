@@ -142,7 +142,7 @@ runs:
     - name: Setup Docker client config
       shell: bash
       run: >
-        ${{ github.action_path }}/${{ github.action_path }}/bin/set_json_values.sh
+        ${{ github.action_path }}/bin/set_json_values.sh
         ~/.docker/config.json
         "proxies.default.noProxy:${NO_PROXY}"
 
