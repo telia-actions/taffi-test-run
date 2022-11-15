@@ -11,6 +11,10 @@ inputs:
     default: 'output'
     required: false
     type: string
+  taffiCmd:
+    description: Command to run before starting TAFFi server. Can be used for example installing some additional libraries etc.
+    required: false
+    type: string
   testRunTool:
     description: Test tool to run
     default: robot
@@ -121,12 +125,25 @@ runs:
         "runConfig.runs.0.configPath:/taffi/tests/${{ inputs.testRunConfigPath }}"
         "runConfig.runs.0.baseDir:/taffi/tests/${{ inputs.testRunBaseDir }}"
 
+    - name: Setup cmd for TAFFi server container in TAFFi run config
+      if: ${{ inputs.taffiCmd != '' }}
+      shell: bash
+      run: >
+        ${{ github.action_path }}/bin/set_json_values.sh
+        ${{env.TAFFI_CONFIGS}}/runConfig.json
+        "serverConfig.cmd:__array__bash -c \"${{ inputs.taffiCmd }} && cd /taffi && npm start --prefix server\""
+
     - name: Setup Docker client config
       shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
         ~/.docker/config.json
         "proxies.default.noProxy:${NO_PROXY}"
+
+    - name: Check run config
+      shell: bash
+      run: |
+        cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
     - name: Run Robot tests with TAFFi
       if: ${{ inputs.realRun == 'true' }}
