@@ -125,6 +125,10 @@ runs:
         "runConfig.runs.0.configPath:/taffi/tests/${{ inputs.testRunConfigPath }}"
         "runConfig.runs.0.baseDir:/taffi/tests/${{ inputs.testRunBaseDir }}"
 
+    - name: Check taffiCmd input
+      shell: bash
+      run: echo "TAFFi cmd: '${{ inputs.taffiCmd }}'"
+
     - name: Setup cmd for TAFFi server container in TAFFi run config
       if: ${{ inputs.taffiCmd != '' }}
       shell: bash
