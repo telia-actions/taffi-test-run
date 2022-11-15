@@ -11,10 +11,15 @@ inputs:
     default: 'output'
     required: false
     type: string
-  taffiCmd:
+  taffiServerCmd:
     description: Command to run before starting TAFFi server. Can be used for example installing some additional libraries etc.
     required: false
     type: string
+  taffiServerTimeout:
+    description: Timeout for waiting the TAFFi server to be reachable before starting the test run. During this time for example the command to run before starting TAFFi server (taffiServerCmd) is run.
+    default: 180
+    required: false
+    type: number
   testRunTool:
     description: Test tool to run
     default: robot
@@ -119,24 +124,25 @@ runs:
         "serverConfig.configDir:${{env.TAFFI_CONFIGS}}"
         "serverConfig.resultsDir:${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}"
         "cliConfig.configDir:${{env.TAFFI_CONFIGS}}"
+        "cliConfig.serverTimeout:__number__${{ inputs.taffiServerTimeout }}"
         "runConfig.runs.0.tool:${{ inputs.testRunTool }}"
         "runConfig.runs.0.options:__array__${{ inputs.testRunOptions }}"
         "runConfig.runs.0.tests:__array__${{ inputs.testRunTests }}"
         "runConfig.runs.0.configPath:/taffi/tests/${{ inputs.testRunConfigPath }}"
         "runConfig.runs.0.baseDir:/taffi/tests/${{ inputs.testRunBaseDir }}"
 
-    - name: Check taffiCmd input
+    - name: Check taffiServerCmd input
       shell: bash
       run: |
-        echo "TAFFi cmd: \"${{ inputs.taffiCmd }}\""
+        echo "TAFFi cmd: \"${{ inputs.taffiServerCmd }}\""
 
     - name: Setup cmd for TAFFi server container in TAFFi run config
-      if: ${{ inputs.taffiCmd != '' }}
+      if: ${{ inputs.taffiServerCmd != '' }}
       shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/runConfig.json
-        "serverConfig.cmd:__array__bash -c \"${{ inputs.taffiCmd }} && cd /taffi && npm start --prefix server\""
+        "serverConfig.cmd:__array__bash -c \"${{ inputs.taffiServerCmd }} && cd /taffi && npm start --prefix server\""
 
     - name: Setup Docker client config
       shell: bash
