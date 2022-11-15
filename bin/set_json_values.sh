@@ -104,11 +104,15 @@ function set_value() {
   shift
   local VALUE=$@
   arrayPrefix="__array__"
+  numberPrefix="__number__"
   if [[ "$VALUE" == $arrayPrefix* ]]; then
     VALUES=${VALUE#"$arrayPrefix"}
     echo "    Appending values ($VALUES) to JSON array"
     append_to_JSON_array $FILEPATH $JSONPATH $VALUES
     # jq 'setpath( $path|split(".")|map(tonumber? // .); getpath($path|split(".")|map(tonumber? // .)) + ($value|split(",")))' --arg path $JSONPATH --arg value "$VALUE" $FILEPATH > tmp.$$.json && mv tmp.$$.json $FILEPATH
+  elif [[ "$VALUE" == $numberPrefix* ]]; then
+    VALUE=${VALUE#"$numberPrefix"}
+    jq 'setpath( $path|split(".")|map(tonumber? // .); $value|tonumber)' --arg path $JSONPATH --arg value "$VALUE" $FILEPATH > tmp.$$.json && mv tmp.$$.json $FILEPATH
   else
     jq 'setpath( $path|split(".")|map(tonumber? // .); $value)' --arg path $JSONPATH --arg value "$VALUE" $FILEPATH > tmp.$$.json && mv tmp.$$.json $FILEPATH
   fi

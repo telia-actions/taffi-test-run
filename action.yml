@@ -11,6 +11,15 @@ inputs:
     default: 'output'
     required: false
     type: string
+  taffiServerCmd:
+    description: Command to run before starting TAFFi server. Can be used for example installing some additional libraries etc.
+    required: false
+    type: string
+  taffiServerTimeout:
+    description: Timeout for waiting the TAFFi server to be reachable before starting the test run. During this time for example the command to run before starting TAFFi server (taffiServerCmd) is run.
+    default: 180
+    required: false
+    type: number
   testRunTool:
     description: Test tool to run
     default: robot
@@ -115,18 +124,32 @@ runs:
         "serverConfig.configDir:${{env.TAFFI_CONFIGS}}"
         "serverConfig.resultsDir:${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}"
         "cliConfig.configDir:${{env.TAFFI_CONFIGS}}"
+        "cliConfig.serverTimeout:__number__${{ inputs.taffiServerTimeout }}"
         "runConfig.runs.0.tool:${{ inputs.testRunTool }}"
         "runConfig.runs.0.options:__array__${{ inputs.testRunOptions }}"
         "runConfig.runs.0.tests:__array__${{ inputs.testRunTests }}"
         "runConfig.runs.0.configPath:/taffi/tests/${{ inputs.testRunConfigPath }}"
         "runConfig.runs.0.baseDir:/taffi/tests/${{ inputs.testRunBaseDir }}"
 
-    - name: Setup Docker client config
+    - name: Setup cmd for TAFFi server container in TAFFi run config
+      if: ${{ inputs.taffiServerCmd != '' }}
       shell: bash
       run: >
         ${{ github.action_path }}/bin/set_json_values.sh
+        ${{env.TAFFI_CONFIGS}}/runConfig.json
+        "serverConfig.cmd:__array__bash -c \"${{ inputs.taffiServerCmd }} && cd /taffi && npm start --prefix server\""
+
+    - name: Setup Docker client config
+      shell: bash
+      run: >
+        ${{ github.action_path }}/${{ github.action_path }}/bin/set_json_values.sh
         ~/.docker/config.json
         "proxies.default.noProxy:${NO_PROXY}"
+
+    - name: Check run config
+      shell: bash
+      run: |
+        cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
     - name: Run Robot tests with TAFFi
       if: ${{ inputs.realRun == 'true' }}
