@@ -127,7 +127,8 @@ runs:
 
     - name: Check taffiCmd input
       shell: bash
-      run: echo "TAFFi cmd: \"${{ inputs.taffiCmd }}\""
+      run: |
+        echo "TAFFi cmd: \"${{ inputs.taffiCmd }}\""
 
     - name: Setup cmd for TAFFi server container in TAFFi run config
       if: ${{ inputs.taffiCmd != '' }}
