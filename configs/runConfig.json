@@ -4,7 +4,6 @@
   },
   "cliConfig": {
       "dockerImage": "verso-docker-dev-local.jfrog.teliacompany.io/taffi/tafficli:latest",
-      "serverUrl": "http://taffiserver.taffinet:4000",
-      "serverTimeout": 180
+      "serverUrl": "http://taffiserver.taffinet:4000"
   }
 }
