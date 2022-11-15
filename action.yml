@@ -1,71 +1,68 @@
 name: 'Run tests using TAFFi'
 description: 'Sets up needed TAFFi configs and runs the tests using TAFFi'
 inputs:
-    inputs:
-      testDir:
-        description: Path to a directory below which all the files needed for test run are found from. Path is relative to workspace directory
-        default: ''
-        required: false
-        type: string
-      resultsDir:
-        description: Path to a directory where all the test results will be stored. Path is relative to workspace directory
-        default: 'output'
-        required: false
-        type: string
-      testRunTool:
-        description: Test tool to run
-        default: robot
-        required: false
-        type: string
-      testRunBaseDir:
-        description: Path to the base directory where all tests to run are found. Must be relative to testDir input.
-        default: robot/tests
-        required: false
-        type: string
-      testRunConfigPath:
-        description: Path to the test configuration file (tool specific file, for Robot it is an argument file in JSON format). Must be relative to testDir input.
-        default: robot/tests/robot.arguments.json
-        required: false
-        type: string
-      testRunTests:
-        description: Tests to run. Quotes (") need to be escaped with a backslash (\).
-        default: .
-        required: false
-        type: string
-      testRunOptions:
-        description: Commandline options to be given for test tool. Quotes (") need to be escaped with a backslash (\).
-        required: false
-        type: string
-      dockerRegistryUsername:
-        description: Username to be used to access the Docker registry in Telia Company JFrog Artifactory (verso-docker-dev-local.jfrog.teliacompany.io) for downloading the TAFFi Docker images
-        required: true
-        type: string
-      dockerRegistryPassword:
-        description: Password to be used to access the Docker registry in Telia Company JFrog Artifactory (verso-docker-dev-local.jfrog.teliacompany.io) for downloading the TAFFi Docker images
-        required: true
-        type: string
-      jiraProject:
-        description: Jira project to which report the results
-        required: false
-        type: string
-      jiraTestPlan:
-        description: Jira test plan to which report the results
-        required: false
-        type: string
-      jiraUsername:
-        description: Username to be used to access Jira (https://devopsjira.verso.sonera.fi) for reporting test results. Required only if also both jiraProject and jiraTestPlan are provided, and thus test reporting is tried to be done.
-        required: false
-        type: string
-      jiraPassword:
-        description: Password to be used to access Jira (https://devopsjira.verso.sonera.fi) for reporting test results. Required only if also both jiraProject and jiraTestPlan are provided, and thus test reporting is tried to be done.
-        required: false
-        type: string
-
-
-# outputs:
-#   report-url:
-#     description: "URL for Allure report"
-#     value: ${{ steps.report-link.outputs.report-url }}
+  testDir:
+    description: Path to a directory below which all the files needed for test run are found from. Path is relative to workspace directory
+    default: ''
+    required: false
+    type: string
+  resultsDir:
+    description: Path to a directory where all the test results will be stored. Path is relative to workspace directory
+    default: 'output'
+    required: false
+    type: string
+  testRunTool:
+    description: Test tool to run
+    default: robot
+    required: false
+    type: string
+  testRunBaseDir:
+    description: Path to the base directory where all tests to run are found. Must be relative to testDir input.
+    default: robot/tests
+    required: false
+    type: string
+  testRunConfigPath:
+    description: Path to the test configuration file (tool specific file, for Robot it is an argument file in JSON format). Must be relative to testDir input.
+    default: robot/tests/robot.arguments.json
+    required: false
+    type: string
+  testRunTests:
+    description: Tests to run. Quotes (") need to be escaped with a backslash (\).
+    default: .
+    required: false
+    type: string
+  testRunOptions:
+    description: Commandline options to be given for test tool. Quotes (") need to be escaped with a backslash (\).
+    required: false
+    type: string
+  dockerRegistryUsername:
+    description: Username to be used to access the Docker registry in Telia Company JFrog Artifactory (verso-docker-dev-local.jfrog.teliacompany.io) for downloading the TAFFi Docker images
+    required: true
+    type: string
+  dockerRegistryPassword:
+    description: Password to be used to access the Docker registry in Telia Company JFrog Artifactory (verso-docker-dev-local.jfrog.teliacompany.io) for downloading the TAFFi Docker images
+    required: true
+    type: string
+  jiraProject:
+    description: Jira project to which report the results
+    required: false
+    type: string
+  jiraTestPlan:
+    description: Jira test plan to which report the results
+    required: false
+    type: string
+  jiraUsername:
+    description: Username to be used to access Jira (https://devopsjira.verso.sonera.fi) for reporting test results. Required only if also both jiraProject and jiraTestPlan are provided, and thus test reporting is tried to be done.
+    required: false
+    type: string
+  jiraPassword:
+    description: Password to be used to access Jira (https://devopsjira.verso.sonera.fi) for reporting test results. Required only if also both jiraProject and jiraTestPlan are provided, and thus test reporting is tried to be done.
+    required: false
+    type: string
+  realRun:
+    description: Really run tests?
+    default: true
+    type: boolean
 
 runs:
   using: composite
@@ -81,41 +78,7 @@ runs:
       shell: bash
       run: |
         mkdir -p ${{env.TAFFI_CONFIGS}}
-        cp configs/* ${{env.TAFFI_CONFIGS}}
-
-    # - name: Prepare TAFFi config files
-    #   run: |
-    #     mkdir -p ${{env.TAFFI_CONFIGS}}
-    #     cat << EOF > ${{env.TAFFI_CONFIGS}}/tafConfig.json
-    #     {
-    #         "reportDir": "/taffi/results",
-    #         "jUnitReportFile": "junit/junit.xml",
-    #         "jira": {
-    #             "baseUrl": "https://devopsjira.verso.sonera.fi"
-    #         },
-    #         "testReporter": "xray",
-    #         "testReporterComment": "Supported values are testflo, xray",
-    #         "logging": {
-    #             "logger": "debug",
-    #             "loggerComment": "Supported values are pino, debug and console",
-    #             "level": "trace",
-    #             "levelComment": "Supported values are trace, debug, info, warn, error, fatal and silent"
-    #         }
-    #     }
-    #     EOF
-    #     cat << EOF > ${{env.TAFFI_CONFIGS}}/runConfig.json
-    #     {
-    #         "serverConfig": {
-    #             "dockerImage": "verso-docker-dev-local.jfrog.teliacompany.io/taffi/taffiserver:latest",
-    #             "cmd": ["bash", "-c", "pip install -r /taffi/tests/cicd/requirements.txt && npm start --prefix server"]
-    #         },
-    #         "cliConfig": {
-    #             "dockerImage": "verso-docker-dev-local.jfrog.teliacompany.io/taffi/tafficli:latest",
-    #             "serverUrl": "http://taffiserver.taffinet:4000",
-    #             "serverTimeout": 180
-    #         }
-    #     }
-    #     EOF
+        cp ${{ github.action_path }}/configs/* ${{env.TAFFI_CONFIGS}}
 
     - name: Login to verso-docker-dev-local Docker registry in Common Artifactory
       uses: docker/login-action@v2
@@ -129,7 +92,7 @@ runs:
       if: inputs.jiraProject != '' && inputs.jiraTestPlan != ''
       shell: bash
       run: >
-        bin/set_json_values.sh
+        ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/tafConfig.json
         "jira.credentials.username:${{ inputs.jiraUsername }}"
         "jira.credentials.password:${{ inputs.jiraPassword }}"
@@ -138,7 +101,7 @@ runs:
       if: inputs.jiraProject != '' && inputs.jiraTestPlan != ''
       shell: bash
       run: >
-        bin/set_json_values.sh
+        ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/runConfig.json
         "runConfig.jiraProject:${{ inputs.jiraProject }}"
         "runConfig.testPlan:${{ inputs.jiraTestPlan }}"
@@ -146,7 +109,7 @@ runs:
     - name: Setup TAFFi server, client and run config in TAFFi run configs
       shell: bash
       run: >
-        bin/set_json_values.sh
+        ${{ github.action_path }}/bin/set_json_values.sh
         ${{env.TAFFI_CONFIGS}}/runConfig.json
         "serverConfig.testDir:${GITHUB_WORKSPACE}/${{ inputs.testDir }}"
         "serverConfig.configDir:${{env.TAFFI_CONFIGS}}"
@@ -161,67 +124,19 @@ runs:
     - name: Setup Docker client config
       shell: bash
       run: >
-        bin/set_json_values.sh
+        ${{ github.action_path }}/bin/set_json_values.sh
         ~/.docker/config.json
         "proxies.default.noProxy:${NO_PROXY}"
 
-    - name: Check contents of tafConfig.json
+    - name: Run Robot tests with TAFFi
+      if: ${{ inputs.realRun == 'true' }}
       shell: bash
       run: |
-        cat "${{env.TAFFI_CONFIGS}}/tafConfig.json"
+        ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
-    - name: Check contents of TAFFi run config
-      shell: bash
-      run: |
-        cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
-
-    # - name: Run Robot tests with TAFFi
-    #   run: |
-    #     bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
-
-    # - name: Check the Robot output dir contents
-    #   if: always()
-    #   run: ls -la ${GITHUB_WORKSPACE}/${{ inputs.resultsDir }}
-
-    # - name: Archive Robot output
-    #   if: always()
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: robot-output
-    #     path: '${{ github.workspace }}/${{ inputs.resultsDir }}/**'
-
-
-  # using: composite
-  # steps:
-  #   - name: Get Allure history
-  #     uses: actions/checkout@v3
-  #     continue-on-error: true
-  #     with:
-  #       ref: ${{ inputs.gh-pages-branch }}
-  #       path: gh-pages
-
-  #   - name: Allure Report Generation
-  #     uses: telia-actions/simple-elf-allure-report@v1
-  #     with:
-  #       allure_results: ${{ inputs.allure-results }}
-  #       #gh_pages: gh-pages
-  #       #allure_report: allure-report
-  #       allure_history: allure-history
-  #       keep_reports: ${{ inputs.keep-reports }}
-  #       subfolder: ${{ inputs.subfolder }}
-  #       test_env_name: ${{ inputs.test-env-name }}
-
-  #   - name: Deploy report to Github Pages
-  #     uses: telia-actions/peaceiris-gh-pages@v4
-  #     with:
-  #       github_token: ${{ inputs.gh-token }}
-  #       publish_branch: ${{ inputs.gh-pages-branch }}
-  #       publish_dir: ./allure-history
-
-  #   - id: report-link
-  #     run: |
-  #       if [[ '${{ inputs.subfolder }}' != '' ]]; then export URL_SUBFOLDER=${{ inputs.subfolder }}/; fi
-  #       echo "report-url=$(gh api repos/$GITHUB_REPOSITORY/pages | jq .html_url | sed -e 's/^"//' -e 's/"$//')${URL_SUBFOLDER}${{ github.run_number }}/" >> $GITHUB_OUTPUT
-  #     env:
-  #       GH_TOKEN: ${{ inputs.gh-token }}
-  #     shell: bash
+    - name: Archive Robot output
+      if: ${{ inputs.realRun == 'true' && always() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: robot-output
+        path: '${{ github.workspace }}/${{ inputs.resultsDir }}/**'
