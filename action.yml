@@ -44,6 +44,10 @@ inputs:
     description: Commandline options to be given for test tool. Quotes (") need to be escaped with a backslash (\).
     required: false
     type: string
+  noProxy:
+    description: String to be appended to the end of NO_PROXY environment variable.
+    required: false
+    type: string
   dockerRegistryUsername:
     description: Username to be used to access the Docker registry in Telia Company JFrog Artifactory (verso-docker-dev-local.jfrog.teliacompany.io) for downloading the TAFFi Docker images
     required: true
@@ -80,8 +84,8 @@ runs:
       shell: bash
       run: |
         echo "TAFFI_CONFIGS=${GITHUB_WORKSPACE}/taffi_config" >> $GITHUB_ENV
-        echo "no_proxy=${no_proxy},.telia.net,.taffinet" >> $GITHUB_ENV
-        echo "NO_PROXY=${NO_PROXY},.telia.net,.taffinet" >> $GITHUB_ENV
+        echo "no_proxy=${no_proxy},.telia.net,.taffinet,${{ inputs.noProxy }}" >> $GITHUB_ENV
+        echo "NO_PROXY=${NO_PROXY},.telia.net,.taffinet,${{ inputs.noProxy }}" >> $GITHUB_ENV
 
     - name: Prepare TAFFi config files
       shell: bash
