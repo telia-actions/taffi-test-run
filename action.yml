@@ -155,13 +155,13 @@ runs:
       run: |
         cat "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
-    - name: Run Robot tests with TAFFi
+    - name: Run tests with TAFFi
       if: ${{ inputs.realRun == 'true' }}
       shell: bash
       run: |
         ${{ github.action_path }}/bin/run_tests.sh -o -s "${{env.TAFFI_CONFIGS}}/runConfig.json"
 
-    - name: Archive Robot output
+    - name: Archive test results
       if: ${{ inputs.realRun == 'true' && always() }}
       uses: actions/upload-artifact@v3
       with:
